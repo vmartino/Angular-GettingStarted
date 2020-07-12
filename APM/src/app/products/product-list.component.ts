@@ -9,11 +9,26 @@ import { IProduct } from './product';
 export class ProductListComponent 
     implements OnInit {
     
+    
     pageTitle: string = 'Product List';
     imageWidth: number = 50;
     imageMargin: number = 2;
     showImage: boolean = false;
-    listFilter: string = 'cart';
+    
+    _listFilter: string;
+    public get listFilter() : string {
+        return this._listFilter;
+    }
+    
+    public set listFilter(v : string) {
+        this._listFilter = v;
+        this.filteredProducts = this.listFilter ? this.performFilter(this.listFilter) : this.products;
+    }
+    
+    
+    // We create a separate property to bind filtered products.
+    // This prevents us keeping the original list of products unaffected by filtering operations.
+    filteredProducts: IProduct[];
     products: IProduct[] = [
         {
         "productId": 2,
@@ -37,6 +52,16 @@ export class ProductListComponent
         }
     ];
 
+    constructor() {
+        this.filteredProducts = this.products;
+        this.listFilter = 'cart';
+    }
+
+    performFilter(filterBy: string): IProduct[] {
+        filterBy = filterBy.toLocaleLowerCase();
+        return this.products.filter((product: IProduct) =>
+            product.productName.toLocaleLowerCase().indexOf(filterBy) != -1);
+    }
     toggleImage(): void {
         this.showImage = !this.showImage;
     }
