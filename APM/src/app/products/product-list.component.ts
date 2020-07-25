@@ -21,6 +21,7 @@ export class ProductListComponent
     products: IProduct[] = [];
 
     _listFilter: string;
+    errorMessage: string;
     public get listFilter() : string {
         return this._listFilter;
     }
@@ -45,8 +46,14 @@ export class ProductListComponent
 
     // We use onInit to initialize the component with data
     ngOnInit(): void {
-        this.products = this.productService.getProducts();
-        this.filteredProducts = this.products;
+        this.productService.getProducts().subscribe({
+            next: products => {
+                this.products = products;
+                this.filteredProducts = this.products;
+            },
+            error: err => this.errorMessage = err
+        })
+        
     }
 
     onRatingClicked(event: string): void {
